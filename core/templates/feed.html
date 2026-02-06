@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Learnr </title>
+</head>
+<body>
+    <h1> Feed</h1>
+
+    {% if user.is_authenticated %}
+        <p>Login name: {{ user.username }}</p>
+        <a href="/criar/">New post</a> |
+        <a href="/logout/">Logout</a>
+    {% else %}
+        <a href="/login/">Login</a> |
+        <a href="/cadastro/">Registration</a>
+    {% endif %}
+
+    <hr>
+
+    {% for post in posts %}
+        <div style="border:1px solid black; margin:10px; padding:10px;">
+            <strong>{{ post.autor }}</strong>
+            <p>{{ post.texto }}</p>
+            <small>{{ post.criado_em }}</small>
+            <p>Likes: {{ post.total_curtidas }}</p>
+
+            {% if user.is_authenticated %}
+                <a href="/curtir/{{ post.id }}/">Like / Deslike</a>
+            {% endif %}
+        </div>
+    {% empty %} 
+        <p>No post yet.</p>
+    {% endfor %}
+</body>
+</html>

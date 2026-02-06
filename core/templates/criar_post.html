@@ -1,0 +1,10 @@
+<h2>New Post</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <textarea name="texto" placeholder="What are you studying?"></textarea>
+    <br>
+    <button type="submit">Post</button>
+</form>
+
+<a href="/">Back to feed</a>
