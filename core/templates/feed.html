@@ -1,35 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> Learnr </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed - Learnr</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'estilo.css' %}">
 </head>
 <body>
-    <h1> Feed</h1>
+    <header>
+        <h1>Learnr</h1>
+    </header>
 
-    {% if user.is_authenticated %}
-        <p>Login name: {{ user.username }}</p>
-        <a href="/criar/">New post</a> |
-        <a href="/logout/">Logout</a>
-    {% else %}
-        <a href="/login/">Login</a> |
-        <a href="/cadastro/">Registration</a>
-    {% endif %}
+    <div class="container">
 
-    <hr>
-
-    {% for post in posts %}
-        <div style="border:1px solid black; margin:10px; padding:10px;">
-            <strong>{{ post.autor }}</strong>
-            <p>{{ post.texto }}</p>
-            <small>{{ post.criado_em }}</small>
-            <p>Likes: {{ post.total_curtidas }}</p>
-
+        <div class="user-bar">
             {% if user.is_authenticated %}
-                <a href="/curtir/{{ post.id }}/">Like / Deslike</a>
+                <div class="user-info">
+                    Login name <strong><a href="{% url 'profile' user.id %}">{{ user.username }}</a></strong>
+                </div>
+                <div>
+                    <a class="button" href="/criar/">New</a>
+                    <a class="button" href="/logout/">Logout</a>
+                </div>
+            {% else %}
+                <div>
+                    <a class="button" href="/login/">Login</a>
+                    <a class="button" href="/cadastro/">Register</a>
+                </div>
             {% endif %}
         </div>
-    {% empty %} 
-        <p>No post yet.</p>
-    {% endfor %}
+
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <a href="{% url 'profile' post.autor.id %}">{{ post.autor }}</a>
+                </div>
+
+                <div class="post-text">
+                    {{ post.texto }}
+                </div>
+
+                <div class="post-footer">
+                    <span>{{ post.criado_em }}</span>
+
+                    {% if user.is_authenticated %}
+                        <a class="button" href="{% url 'like_post' post.id %}">
+                            ❤️ {{ post.curtidas.count }}
+                        </a>
+                    {% else %}
+                        <span>❤️ {{ post.curtidas.count }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="comments-section">
+                    {% for comentario in post.comentarios.all %}
+                        <p>
+                            <a href="{% url 'profile' comentario.autor.id %}"">{{ comentario.autor }}</a> {{ comentario.texto }}
+                        </p>
+                    {% endfor %}
+                    
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'coment_post' post.id %}" style="margin-top: 8px;">
+                            {% csrf_token %}
+                            <input type="text" name="texto" placeholder="Make a comment..."">
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No posts yet.</p>
+        {% endfor %}
+    </div>
 </body>
 </html>

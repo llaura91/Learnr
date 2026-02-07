@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Learnr</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'estilo.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Learnr</h1>
+    </header>
+
+    <div class="container">
+        <div class="profile-header">
+            <h2>@{{ usuario.username }}</h2>
+
+            {% if perfil.bio %}
+                <p class="bio">{{ perfil.bio }}</p>
+            {% endif %}
+
+            <p class="seguidor-info">
+                <strong>{{ seguidores }}</strong> followers •
+                <strong>{{ seguindo }}</strong> following
+            </p>
+        </div>
+
+        <div class="profile-actions">
+            {% if user.is_authenticated and user.id == usuario.id %}
+                <a class="button" href="{% url 'edit_profile' %}">Edit Profile</a>
+            {% elif user.is_authenticated %}
+                <a class="button" href="{% url 'follow_user' usuario.id %}">
+                    {% if seguindo_usuario %}
+                        Unfollow
+                    {% else %}
+                        Follow
+                    {% endif %}
+                </a>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <h3>Posts</h3>
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-text">
+                    {{ post.texto }}
+                </div>
+                <small>{{ post.criado_em }}</small>
+
+                {% if user.is_authenticated %}
+                    <a class="button" href="{% url 'like_post' post.id %}">
+                        ❤️ {{ post.curtidas.count }}
+                    </a>
+                {% else %}
+                    <span>❤️ {{ post.curtidas.count }}</span>
+                {% endif %}
+                
+                
+                <div class="comentarios-section">
+                    {% for comentario in post.comentarios.all %}
+                        <p>
+                            <strong><a href="{% url 'profile' comentario.autor.id %}">{{ comentario.autor }}</a></strong>: {{ comentario.texto }}
+                        </p>
+                    {% endfor %}
+                    
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'coment_post' post.id %}" >
+                            {% csrf_token %}
+                            <input type="text" name="texto" placeholder="Add a comment..." >
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>This user has not posted anything yet.</p>
+        {% endfor %}
+
+        <p><a href="/">Back to feed</a></p>
+    </div>
+</body>
+</html>

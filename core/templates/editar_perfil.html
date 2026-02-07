@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Learnr</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'estilo.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Learnr</h1>
+    </header>
+
+    <div class="container">
+        <div class="form-card">
+            <h2>Edit Profile</h2>
+
+            <form method="post" action="{% url 'edit_profile' %}">
+                {% csrf_token %}
+                <label style="margin-top: 15px;"><strong>Bio (Max 500 characters):</strong></label>
+                <textarea name="bio" maxlength="500" placeholder="Tell us a little about yourself...">{{ perfil.bio }}</textarea>
+
+                <button class="button" type="submit">Save</button>
+            </form>
+
+            <p><a href="{% url 'profile' perfil.usuario.id %}">Back to profile</a></p>
+        </div>
+    </div>
+</body>
+</html>
